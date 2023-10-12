@@ -14,7 +14,7 @@ pub struct Coins {
     pub id: String,
     pub name: String,
     pub symbol: String,
-    pub market_cap_rank: u32,
+    pub market_cap_rank: Option<u32>,
 }
 
 impl Request {
@@ -37,9 +37,9 @@ pub async fn search(query: &str) -> Result<()> {
 
     match coins.len() {
         0 => cprintln!("<r>No coins found"),
-        1 => detail(coins[0].clone()).await?,
+        1 => detail(&coins[0]).await?,
         _ => {
-            let selections: Vec<String> = coins.iter().map(|x| x.name.clone()).collect();
+            let selections: Vec<&str> = coins.iter().map(|x| x.name.as_str()).collect();
 
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt(cformat!("<y>select a coin?"))
@@ -48,7 +48,7 @@ pub async fn search(query: &str) -> Result<()> {
                 .items(&selections[..])
                 .interact()?;
 
-            detail(coins[selection].clone()).await?
+            detail(&coins[selection]).await?
         }
     }
 

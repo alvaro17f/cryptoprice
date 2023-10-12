@@ -21,7 +21,7 @@ struct CurrentPrice {
 }
 
 impl Request {
-    async fn get(id: String) -> Result<Self> {
+    async fn get(id: &str) -> Result<Self> {
         let url = format!("https://api.coingecko.com/api/v3/coins/{id}");
         let response = reqwest::get(&url).await?;
         let request = response.json::<Request>().await?;
@@ -29,12 +29,14 @@ impl Request {
     }
 }
 
-pub async fn detail(selected_coin: Coins) -> Result<()> {
-    let id = selected_coin.id;
-    let rank = selected_coin.market_cap_rank;
+pub async fn detail(selected_coin: &Coins) -> Result<()> {
+    let id = &selected_coin.id;
     let req = Request::get(id).await?;
 
-    cprintln!("<y>Ranking: <g>{}", rank);
+    match selected_coin.market_cap_rank {
+        Some(rank) => cprintln!("<y>Ranking: <g>{}", rank),
+        None => cprintln!("<y>Ranking: <g>Unknown"),
+    }
     cprintln!(
         "<y>Price in USD: <g>{:.2}$",
         req.market_data.current_price.usd

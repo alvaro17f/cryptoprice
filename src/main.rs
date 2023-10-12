@@ -52,11 +52,12 @@ async fn main() -> Result<()> {
         }
         Some(Commands::Top) => {
             clear()?;
-            get_top().await?;
+            get_top(100).await?;
         }
         None => {
             clear()?;
-            get_top().await?;
+            cprintln!("<g>TOP 10 COINS");
+            get_top(10).await?;
         }
     }
 
